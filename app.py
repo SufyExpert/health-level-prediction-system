@@ -2,7 +2,7 @@
 app.py  –  Flask backend for the Health Risk Prediction System
 """
 
-import os, io, base64, json
+import os, io, base64, json, math
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -390,7 +390,6 @@ def predict():
     # The synthetic training data tends to overpredict high risk, so we calibrate using:
     # calibrated_prob = 1 / (1 + exp(3 * (0.5 - raw_prob)))
     # This compresses extreme probabilities toward 50% while keeping the ranking
-    import math
     calibrated_prob = 1.0 / (1.0 + math.exp(3.0 * (0.5 - probability)))
     probability = calibrated_prob
 
