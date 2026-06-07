@@ -427,6 +427,9 @@ def predict():
     probability = max(0, probability - lifestyle_score)
     # Cap at reasonable bounds
     probability = min(0.75, probability)  # Never go above 75% even in worst case
+    
+    # Recalculate prediction label based on calibrated probability
+    prediction = "high" if probability >= 0.5 else "low"
 
     # ── derived values ────────────────────────────────────────────────────────
     weight = float(form_data.get("weight", 70))
