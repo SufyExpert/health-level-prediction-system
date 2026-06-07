@@ -58,15 +58,13 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar-thumb { background: var(--c-light); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--c-mid); }
 
-/* ═══════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════
    LAYOUT SHELL
-   ═══════════════════════════════════════════════════ */
+   ══════════════════════════════════════════════════ */
 .app-shell {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  height: 100vh;
-  overflow: hidden;
 }
 
 /* ── Topbar ──────────────────────────────────────── */
@@ -875,9 +873,8 @@ h1, h2, h3, h4 {
   color: rgba(200,239,225,.5);
   text-align: center;
   font-size: .78rem;
-  padding: 0.8rem 1.25rem;
+  padding: 1.25rem;
   letter-spacing: .03em;
-  flex-shrink: 0;
 }
 
 /* ══════════════════════════════════════════════════
