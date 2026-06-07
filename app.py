@@ -2,7 +2,7 @@
 app.py  –  Flask backend for the Health Risk Prediction System
 """
 
-import os, io, base64, json, math
+import os, io, base64, json
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -385,13 +385,6 @@ def predict():
     classes_list = list(le_risk.classes_)
     high_idx     = classes_list.index("high") if "high" in classes_list else 0
     probability  = float(proba[high_idx])
-    
-    # ── Probability calibration: Reduce overly-pessimistic predictions from synthetic data ──
-    # Simple empirical calibration: squeeze probabilities toward 50% for more realistic predictions
-    if probability > 0.5:
-        probability = 0.5 + (probability - 0.5) * 0.5  # reduce extreme high predictions
-    else:
-        probability = 0.5 - (0.5 - probability) * 0.5  # reduce extreme low predictions
 
     # ── derived values ────────────────────────────────────────────────────────
     weight = float(form_data.get("weight", 70))
