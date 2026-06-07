@@ -305,11 +305,10 @@ def generate_charts(form_data, bmi, probability):
     # ── Chart 4: Key numeric metrics vs healthy ranges ────────────────────────
     fig, ax = plt.subplots(figsize=(5, 3), facecolor=PALETTE["lightest"])
     ax.set_facecolor(PALETTE["lightest"])
-    metrics      = ["BMI", "Sleep (h)", "Age"]
-    user_vals    = [bmi, float(form_data.get("sleep", 7)),
-                    float(form_data.get("age", 30))]
-    healthy_hi   = [24.9, 9.0, 60]
-    healthy_lo   = [18.5, 7.0, 18]
+    metrics      = ["BMI", "Sleep (h)"]
+    user_vals    = [bmi, float(form_data.get("sleep", 7))]
+    healthy_hi   = [24.9, 9.0]
+    healthy_lo   = [18.5, 7.0]
 
     x = np.arange(len(metrics))
     width = 0.35
