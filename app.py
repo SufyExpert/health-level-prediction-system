@@ -386,12 +386,12 @@ def predict():
     high_idx     = classes_list.index("high") if "high" in classes_list else 0
     probability  = float(proba[high_idx])
     
-    # ── Probability calibration: Apply sigmoid-based scaling to reduce overly-pessimistic predictions ──
-    # The synthetic training data tends to overpredict high risk, so we calibrate using:
-    # calibrated_prob = 1 / (1 + exp(3 * (0.5 - raw_prob)))
-    # This compresses extreme probabilities toward 50% while keeping the ranking
-    calibrated_prob = 1.0 / (1.0 + math.exp(3.0 * (0.5 - probability)))
-    probability = calibrated_prob
+    # ── Probability calibration: Reduce overly-pessimistic predictions from synthetic data ──
+    # Simple empirical calibration: squeeze probabilities toward 50% for more realistic predictions
+    if probability > 0.5:
+        probability = 0.5 + (probability - 0.5) * 0.5  # reduce extreme high predictions
+    else:
+        probability = 0.5 - (0.5 - probability) * 0.5  # reduce extreme low predictions
 
     # ── derived values ────────────────────────────────────────────────────────
     weight = float(form_data.get("weight", 70))
