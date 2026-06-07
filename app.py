@@ -312,9 +312,21 @@ def generate_charts(form_data, bmi, probability):
 
     x = np.arange(len(metrics))
     width = 0.35
-    # normalise to 0-1 using [lo, hi]
-    norm_user = [min(max((v - lo) / max(hi - lo, 1), 0), 1.3)
-                 for v, lo, hi in zip(user_vals, healthy_lo, healthy_hi)]
+    
+    # Better normalization: values within ideal range show as 1.0
+    norm_user = []
+    for v, lo, hi in zip(user_vals, healthy_lo, healthy_hi):
+        if lo <= v <= hi:
+            # Within ideal range = full bar
+            norm_user.append(1.0)
+        elif v < lo:
+            # Below ideal: scale from 0 to 1
+            norm_user.append(max(0, v / lo * 0.8))
+        else:
+            # Above ideal: scale from 1 to 1.3
+            overage = (v - hi) / (hi - lo)
+            norm_user.append(min(1.3, 1.0 + overage * 0.3))
+    
     norm_ideal = [1.0] * len(metrics)
 
     ax.bar(x - width / 2, norm_ideal, width, label="Ideal Range",
