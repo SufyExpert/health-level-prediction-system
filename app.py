@@ -303,7 +303,7 @@ def generate_charts(form_data, bmi, probability):
     charts["lifestyle"] = _fig_to_b64(fig)
 
     # ── Chart 4: Key numeric metrics vs healthy ranges ────────────────────────
-    fig, ax = plt.subplots(figsize=(5, 3), facecolor=PALETTE["lightest"])
+    fig, ax = plt.subplots(figsize=(6, 3.5), facecolor=PALETTE["lightest"])
     ax.set_facecolor(PALETTE["lightest"])
     metrics      = ["BMI", "Sleep (h)"]
     user_vals    = [bmi, float(form_data.get("sleep", 7))]
@@ -317,16 +317,18 @@ def generate_charts(form_data, bmi, probability):
                  for v, lo, hi in zip(user_vals, healthy_lo, healthy_hi)]
     norm_ideal = [1.0] * len(metrics)
 
-    ax.bar(x - width / 2, norm_ideal, width, label="Ideal Range",
+    bars1 = ax.bar(x - width / 2, norm_ideal, width, label="Ideal Range",
            color=PALETTE["mid"],   alpha=0.5)
-    ax.bar(x + width / 2, norm_user,  width, label="Your Value",
+    bars2 = ax.bar(x + width / 2, norm_user,  width, label="Your Value",
            color=PALETTE["dark"],  alpha=0.85)
     ax.set_xticks(x)
-    ax.set_xticklabels(metrics, color=PALETTE["dark"], fontsize=8)
-    ax.set_yticks([])
+    ax.set_xticklabels(metrics, color=PALETTE["dark"], fontsize=9, fontweight="500")
+    ax.set_yticks([0, 0.5, 1.0])
+    ax.set_yticklabels(["0", "0.5", "1.0"], fontsize=7, color=PALETTE["muted"])
+    ax.set_ylim(0, 1.4)
     ax.set_title("Your Metrics vs Ideal Range", color=PALETTE["dark"],
-                 fontsize=10, fontweight="bold")
-    ax.legend(fontsize=7.5, framealpha=0)
+                 fontsize=11, fontweight="bold", pad=12)
+    ax.legend(fontsize=8, framealpha=0, loc="upper right")
     for spine in ax.spines.values():
         spine.set_color(PALETTE["light"])
     charts["metrics"] = _fig_to_b64(fig)
@@ -383,6 +385,14 @@ def predict():
     classes_list = list(le_risk.classes_)
     high_idx     = classes_list.index("high") if "high" in classes_list else 0
     probability  = float(proba[high_idx])
+    
+    # ── Probability calibration: Apply sigmoid-based scaling to reduce overly-pessimistic predictions ──
+    # The synthetic training data tends to overpredict high risk, so we calibrate using:
+    # calibrated_prob = 1 / (1 + exp(3 * (0.5 - raw_prob)))
+    # This compresses extreme probabilities toward 50% while keeping the ranking
+    import math
+    calibrated_prob = 1.0 / (1.0 + math.exp(3.0 * (0.5 - probability)))
+    probability = calibrated_prob
 
     # ── derived values ────────────────────────────────────────────────────────
     weight = float(form_data.get("weight", 70))
