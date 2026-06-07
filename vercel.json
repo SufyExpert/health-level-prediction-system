@@ -1,17 +1,5 @@
 {
   "env": {
     "PYTHONUNBUFFERED": "1"
-  },
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python@3.0.0"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "api/index.py"
-    }
-  ]
+  }
 }
